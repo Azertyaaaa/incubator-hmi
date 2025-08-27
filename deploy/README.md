@@ -1,182 +1,156 @@
 # 🚀 Raspberry Pi Deployment Guide
 
-Complete guide to deploy your Climate Chamber HMI on a Raspberry Pi with 1280x720 touchscreen.
+Simple Git-based deployment for your Climate Chamber HMI on Raspberry Pi.
 
 ## 📋 Prerequisites
 
 - **Raspberry Pi 4** (recommended) or Pi 3B+
 - **Touchscreen already configured and working**
-- **MicroSD card** (32GB+ recommended)
 - **Raspberry Pi OS** (Desktop version)
-- **4 USB serial connections** for your Picos
+- **Git repository** with your HMI project
+- **User account** (script works with any username, including "admin")
 
-## 🔧 Step 1: Initial Pi Setup
+## 🔧 Quick Deployment (3 Steps)
 
-1. **Flash Raspberry Pi OS** to SD card using [Raspberry Pi Imager](https://www.raspberrypi.org/software/)
-2. **Enable SSH** (optional): Add empty `ssh` file to boot partition
-3. **Boot your Pi** and complete initial setup
-4. **Connect to internet** (WiFi or Ethernet)
-
-## 📦 Step 2: Transfer Project Files
-
-### Option A: Using Git (Recommended)
+### **1. Clone Your Repository**
 ```bash
-cd /home/pi
+cd ~
 git clone <your-repository-url> climate-hmi
 cd climate-hmi
 ```
 
-### Option B: Manual Copy
+### **2. Run Setup Scripts**
 ```bash
-# From your Windows machine, use SCP or USB drive
-scp -r incubator-hmi/ pi@<pi-ip-address>:/home/pi/climate-hmi/
-```
-
-## 🛠️ Step 3: Run Setup Scripts
-
-```bash
-cd /home/pi/climate-hmi
-
 # Make scripts executable
 chmod +x deploy/*.sh
 
-# 1. Install system dependencies and Python environment
+# Run all setup scripts
 ./deploy/pi_setup.sh
-
-# 2. Configure application settings (auto-login, screen blanking)
-./deploy/pi_display_config.sh
-
-# 3. Set up auto-start service
+./deploy/pi_display_config.sh  
 ./deploy/pi_service_setup.sh
 
-# 4. Reboot to apply all changes
+# Reboot to apply all changes
 sudo reboot
 ```
 
-## 🔌 Step 4: Connect Hardware
+### **3. Configure Hardware**
+After reboot, the HMI should start automatically:
+- Connect your 4 Picos via USB
+- Use **Settings tab** to assign serial ports
+- Configure mass calibration values
+- Test connections
 
-1. **Connect USB cables** from your 4 Picos to Pi USB ports
-2. **Identify serial ports**: Run `ls /dev/ttyACM*` or `ls /dev/ttyUSB*`
-3. **Configure ports** in the HMI Settings tab:
-   - Zone 1: /dev/ttyACM0 (or first available)
-   - Zone 2: /dev/ttyACM1
-   - Zone 3: /dev/ttyACM2 
-   - Zone 4: /dev/ttyACM3
+## 🔌 Typical Serial Port Assignments
 
-## ⚙️ Step 5: Configure Application
-
-1. **Launch HMI**: The app should start automatically after reboot
-2. **Open Settings tab** in the application
-3. **Set serial ports** for each zone
-4. **Configure calibration** values for mass sensors
-5. **Test connections** using the "Apply Serial Settings" button
-
-## 📱 Touch Optimization
-
-The HMI is pre-configured for touch:
-- **Large buttons** (50px+ height)
-- **Clear fonts** (14-18px)
-- **Fullscreen mode** by default
-- **No keyboard required**
-
-## 🔍 Troubleshooting
-
-### Service Management
 ```bash
-# Check service status
+# Check available ports
+ls /dev/ttyACM*
+
+# Usually:
+Zone 1: /dev/ttyACM0
+Zone 2: /dev/ttyACM1  
+Zone 3: /dev/ttyACM2
+Zone 4: /dev/ttyACM3
+```
+
+## ⚙️ What Gets Installed
+
+### **System Packages**:
+- Python 3 + pip + venv
+- Serial communication libraries
+- GUI dependencies (tkinter, PIL)
+- Math libraries for matplotlib
+
+### **Python Environment**:
+- Virtual environment in `~/climate-hmi/.venv`
+- CustomTkinter, PySerial, Matplotlib, Pandas
+- All requirements from `requirements.txt`
+
+### **Services**:
+- Auto-start systemd service
+- Screen blanking disabled
+- Desktop shortcut created
+
+## 🔄 Updates
+
+To update your application:
+```bash
+cd ~/climate-hmi
+git pull
+sudo systemctl restart climate-hmi
+```
+
+## 🛠️ Service Management
+
+```bash
+# Check status
 sudo systemctl status climate-hmi
 
 # View logs
 journalctl -u climate-hmi -f
 
-# Restart service
+# Restart
 sudo systemctl restart climate-hmi
 
-# Stop service
-sudo systemctl stop climate-hmi
-```
-
-### Serial Port Issues
-```bash
-# List available ports
-ls /dev/tty*
-
-# Check permissions
-sudo usermod -a -G dialout pi
-sudo reboot
-
-# Test serial connection
-sudo minicom -D /dev/ttyACM0 -b 115200
-```
-
-### Display Issues
-```bash
-# Test current resolution
-xrandr
-
-# If touchscreen needs recalibration
-xinput_calibrator
-```
-
-### Python Issues
-```bash
-# Activate virtual environment
-cd /home/pi/climate-hmi
-source .venv/bin/activate
-
-# Test import
-python3 -c "import customtkinter; print('CustomTkinter OK')"
-
-# Reinstall packages if needed
-pip install --upgrade customtkinter matplotlib pandas pyserial
-```
-
-## 🔄 Updates
-
-To update the application:
-```bash
-cd /home/pi/climate-hmi
-git pull  # If using git
-sudo systemctl restart climate-hmi
-```
-
-## 📊 Data Storage
-
-- **Log files**: `/home/pi/climate-hmi/data/logs/`
-- **Configuration**: `/home/pi/climate-hmi/config/hmi_config.json`
-- **Backup important data** before updates!
-
-## 🆘 Support
-
-### Common Serial Device Names on Pi:
-- **Pico/Arduino**: `/dev/ttyACM0`, `/dev/ttyACM1`, etc.
-- **USB-Serial adapters**: `/dev/ttyUSB0`, `/dev/ttyUSB1`, etc.
-
-### Performance Tips:
-- **Close unused applications** for better performance
-- **Use Class 10 SD card** for faster I/O
-- **Monitor CPU temperature**: `vcgencmd measure_temp`
-
-### Recovery:
-If the HMI doesn't start:
-```bash
 # Stop auto-start
 sudo systemctl disable climate-hmi
+```
 
+## 🆘 Troubleshooting
+
+### **Serial Issues**
+```bash
+# Check ports
+ls /dev/tty*
+
+# Test permissions
+groups $USER  # Should include "dialout"
+
+# If not in dialout group
+sudo usermod -a -G dialout $USER
+sudo reboot
+```
+
+### **App Won't Start**
+```bash
 # Run manually to see errors
-cd /home/pi/climate-hmi
+cd ~/climate-hmi
 source .venv/bin/activate
 python3 main_new.py
 ```
 
-## ✅ Success!
+### **Missing Dependencies**
+```bash
+cd ~/climate-hmi
+source .venv/bin/activate
+pip install -r requirements.txt
+```
 
-Your Climate Chamber HMI should now be running on your Pi with:
-- ✅ 4-zone monitoring
-- ✅ Touch-optimized interface
-- ✅ Auto-start on boot
-- ✅ Real-time charts
-- ✅ Data logging
-- ✅ USB export capability (when implemented)
+## 📁 File Structure
 
-The system will automatically reconnect to serial devices and recover from errors!
+```
+~/climate-hmi/
+├── main_new.py              # Main application
+├── requirements.txt         # Python dependencies
+├── .venv/                   # Virtual environment
+├── config/                  # Settings and calibration
+├── core/                    # Serial and data management
+├── ui/                      # Interface components
+├── data/logs/              # Data logging
+└── deploy/                 # Deployment scripts
+```
+
+## ✅ Success Indicators
+
+After successful deployment:
+- ✅ HMI starts automatically on boot
+- ✅ Touch interface responds
+- ✅ Serial ports detected in Settings
+- ✅ Service shows "active (running)" status
+- ✅ Desktop shortcut available
+
+## 🔒 Security Note
+
+The setup runs the HMI with the current user privileges (admin, pi, etc.). No root access needed for normal operation, only during setup.
+
+Your Climate Chamber HMI is now ready for production use!

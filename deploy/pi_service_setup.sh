@@ -5,7 +5,8 @@
 
 echo "🚀 Setting up auto-start service for Climate HMI..."
 
-PROJECT_DIR="/home/pi/climate-hmi"
+USERNAME=$(whoami)
+PROJECT_DIR="/home/$USERNAME/climate-hmi"
 
 # Create systemd service file
 echo "📝 Creating systemd service..."
@@ -17,8 +18,8 @@ Wants=graphical-session.target
 
 [Service]
 Type=simple
-User=pi
-Group=pi
+User=$USERNAME
+Group=$USERNAME
 WorkingDirectory=$PROJECT_DIR
 Environment=DISPLAY=:0
 ExecStartPre=/bin/sleep 10
@@ -32,11 +33,11 @@ EOF"
 
 # Create start script
 echo "📄 Creating startup script..."
-cat > $PROJECT_DIR/start_hmi.sh << 'EOF'
+cat > $PROJECT_DIR/start_hmi.sh << EOF
 #!/bin/bash
 
 # Climate Chamber HMI Startup Script
-cd /home/pi/climate-hmi
+cd /home/$USERNAME/climate-hmi
 
 # Activate virtual environment
 source .venv/bin/activate

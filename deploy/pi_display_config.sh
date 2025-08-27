@@ -9,25 +9,28 @@ echo "🖥️ Configuring application display settings..."
 echo "👤 Setting up auto-login to desktop..."
 sudo raspi-config nonint do_boot_behaviour B4
 
+# Get current user
+USERNAME=$(whoami)
+
 # Disable screen blanking
 echo "💡 Disabling screen blanking..."
-sudo bash -c 'cat >> /home/pi/.xsessionrc << EOF
+sudo bash -c "cat >> /home/$USERNAME/.xsessionrc << EOF
 xset s off
 xset -dpms
 xset s noblank
-EOF'
+EOF"
 
 # Create desktop entry
 echo "🖥️ Creating desktop shortcut..."
-mkdir -p /home/pi/Desktop
-cat > /home/pi/Desktop/climate-hmi.desktop << EOF
+mkdir -p /home/$USERNAME/Desktop
+cat > /home/$USERNAME/Desktop/climate-hmi.desktop << EOF
 [Desktop Entry]
 Version=1.0
 Type=Application
 Name=Climate Chamber HMI
 Comment=Climate Chamber Monitoring System
-Exec=/home/pi/climate-hmi/start_hmi.sh
-Icon=/home/pi/climate-hmi/icon.png
+Exec=/home/$USERNAME/climate-hmi/start_hmi.sh
+Icon=/home/$USERNAME/climate-hmi/icon.png
 Terminal=false
 Categories=Application;
 EOF

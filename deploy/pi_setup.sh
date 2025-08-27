@@ -21,10 +21,30 @@ sudo apt install -y python3-matplotlib python3-pandas
 # Install CustomTkinter system dependencies
 sudo apt install -y python3-pil python3-pil.imagetk
 
-# Create project directory
-PROJECT_DIR="/home/pi/climate-hmi"
-echo "📁 Creating project directory at $PROJECT_DIR..."
-mkdir -p $PROJECT_DIR
+# Get current user
+USERNAME=$(whoami)
+PROJECT_DIR="/home/$USERNAME/climate-hmi"
+echo "📁 Setting up for user: $USERNAME"
+
+# Clone the project from Git
+echo "📥 Cloning Climate HMI project..."
+cd /home/$USERNAME
+if [ -d "climate-hmi" ]; then
+    echo "📁 Project directory exists, updating..."
+    cd climate-hmi
+    git pull
+else
+    echo "📥 Cloning project..."
+    # Replace with your actual repository URL
+    # git clone https://github.com/yourusername/incubator-hmi.git climate-hmi
+    echo "⚠️  Please clone your repository manually:"
+    echo "   cd /home/$USERNAME"
+    echo "   git clone <your-repo-url> climate-hmi"
+    echo "   cd climate-hmi"
+    echo "   Then re-run this script"
+    exit 1
+fi
+
 cd $PROJECT_DIR
 
 # Create virtual environment
@@ -45,7 +65,7 @@ pip install Pillow
 
 # Add user to dialout group for serial access
 echo "🔌 Adding user to dialout group for serial port access..."
-sudo usermod -a -G dialout pi
+sudo usermod -a -G dialout $USERNAME
 
 echo "✅ Base setup complete!"
 echo ""
