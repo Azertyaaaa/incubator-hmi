@@ -1,0 +1,6 @@
+# Climate Chamber HMI - Pi Requirements
+customtkinter==5.2.0
+pyserial==3.5
+matplotlib==3.7.2
+pandas==2.0.3
+Pillow>=9.0.0
