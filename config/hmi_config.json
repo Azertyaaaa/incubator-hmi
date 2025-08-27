@@ -1,0 +1,24 @@
+{
+    "serial": {
+        "port": "COM7",
+        "baudrate": 9600,
+        "timeout": 1.0
+    },
+    "calibration": {
+        "zone_1": {
+            "mass_offset": 1339,
+            "mass_scale": 1.0,
+            "tare": 1809.0
+        }
+    },
+    "ui": {
+        "fullscreen": true,
+        "width": 1280,
+        "height": 720,
+        "touch_button_height": 80
+    },
+    "logging": {
+        "interval_seconds": 10,
+        "max_log_days": 30
+    }
+}

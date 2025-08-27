@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/incubator-hmi.iml" filepath="$PROJECT_DIR$/.idea/incubator-hmi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/climatic-chamber-hmi.iml" filepath="$PROJECT_DIR$/.idea/climatic-chamber-hmi.iml" />
     </modules>
   </component>
 </project>
