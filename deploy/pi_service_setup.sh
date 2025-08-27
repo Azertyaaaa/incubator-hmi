@@ -46,7 +46,7 @@ source .venv/bin/activate
 export DISPLAY=:0
 
 # Start the HMI application
-python3 main_new.py
+python3 main.py
 EOF
 
 chmod +x $PROJECT_DIR/start_hmi.sh
