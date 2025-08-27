@@ -116,7 +116,7 @@ sudo reboot
 # Run manually to see errors
 cd ~/climate-hmi
 source .venv/bin/activate
-python3 main_new.py
+python3 main.py
 ```
 
 ### **Missing Dependencies**
