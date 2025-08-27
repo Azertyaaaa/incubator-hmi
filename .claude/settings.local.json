@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(find:*)",
+      "Bash(rm:*)",
+      "Bash(.build-envScriptsactivate)",
+      "Bash(pip install:*)",
+      "Bash(.build-env/Scripts/pip install:*)"
     ],
     "deny": [],
     "ask": []
